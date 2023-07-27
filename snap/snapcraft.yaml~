@@ -1,23 +1,22 @@
-name: rjd-plink
-title: rjd-plink
-version: '1.90b5' # just for humans, typically '1.2+git' or '1.3.2'
+name: rjd-plink107
+title: plink107
+version: '1.07' # just for humans, typically '1.2+git' or '1.3.2'
 summary:  PLINK command-line program for genomics
 description: |
           " Comprehensive update to Shaun Purcell's PLINK command-line program."
-          *  The description above refers to the software: https://www.cog-genomics.org/plink/1.9/
+          *  The description above refers to the software: https://zzz.bwh.harvard.edu/plink/
           * I have packaged the software as a snap for **personal use** but I have made the snap available for free.
           * I do not maintain the software itself. I only maintain the snap packaging. Please report software bugs to the maintainers.
           * Report snap-specific bugs to me.
-            * I _DO_ use this snap. It _has been superficially tested_ on my system. I __do not__ track the latest version.
-            * __The snap has not been fully tested__
-            * Packaging 'style' : tarball build for linux machines.
+            * I _DO_ use this snap. It _has passed the provided tests_ on my system. I __do not__ track the latest version.
+            * Packaging 'style' : Binary for linux machines.
             * License refers to the original software, not the snapcraft 'code'.
             * More info:
-            * Run the following to rename the snap
-            ```sudo snap alias rjd-plink.plink plink```
+            * Run the following to rename the snap to plink
+            ```sudo snap alias rjd-plink.plink plink107```
 
-website: https://github.com/RJDan/plink1.9_dev
-source-code : https://github.com/RJDan/plink1.9_dev
+website: https://github.com/RJDan/plink1.07_snap
+source-code : https://github.com/RJDan/plink1.07_snap
 icon: Icon_230417.svg
 
 grade: stable # must be 'stable' to release into candidate/stable channels
@@ -27,109 +26,20 @@ base: core22 # the base snap is the execution environment for this snap
 
 apps:
     plink:
-        command: /usr/local/bin/plink
+        command: bin/plink --noweb
         plugs:
           - home
-#          - network
-#          - removable-media
-#          - x11
-#          - wayland
-#          - desktop
-#          - desktop-legacy
-#          - unity7
-        environment:
-            # XDG config
-            # XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
-            # XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
-            LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/lapack:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/blas
-#            LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/x86_64-linux-gnu/blas:$SNAP/usr/lib/x86_64-linux-gnu/lapack
-# The `layout` ensures that files can be found by applications where they are expected by the toolkit or application.
-    # layout:
-      #   # Other, generally useful paths
-      #   /etc/fonts:
-      #     bind: $SNAP/etc/fonts
-      #   /usr/share/fonts:
-      #     bind: $SNAP/usr/share/fonts
-      #   /usr/share/icons:
-      #     bind: $SNAP/usr/share/icons
-      #   /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lapack:
-      #     bind: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lapack
-      #   /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/blas:
-      #     bind: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/blas
-
+        # environment:
+        #     LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/lapack:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/blas
 
 parts:
-    # zlib:
-    #     source: https://github.com/madler/zlib.git
-    #     source-type: git
-    #     source-tag: "04f42ce"
-    #     plugin: git
     plink:
-        source: https://github.com/chrchang/plink-ng.git
-        source-type: git
-        source-tag: "b15c19f"
-        plugin: make
-        make-parameters:
-              - LDFLAGS="-pthread  -lpthread"
-              #- ZLIB=" ../zlib-1.2.12/libz.so.1.2.12 "
-              - ZLIB="$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/zlib-1.2.12/libz.so.1.2.12"
-#              - CFLAGS="-pthread "
-              - -f Makefile.std plink # Makefile.std was the make file for zlib 1.2.11, which is also the PPA version
-        build-packages:
-#                - curl # see if I can get away without specifying this
-                - libatlas-base-dev # Automatically Tuned Linear Algebra Software, generic static
-#                - libatlas-dev # I guess replaced by libatlas-base-dev
-                - libblas-dev #Basic Linear Algebra Subroutines 3, static library
-                - libc6-dev
-                - liblapack-dev #Library of linear algebra routines 3 - static version
-                - liblapacke-dev #Library of linear algebra routines 3 () - Headers
-                - libtmglib-dev #test matrix generators of LAPACK - development files
-#                - make # see if I can get away without specifying this
-                - zlib1g-dev
-        stage-packages:
-             - gfortran
-             - cfortran
-             - libatlas-doc #Automatically Tuned Linear Algebra Software, documentation
-             - libatlas3-base #Automatically Tuned Linear Algebra Software, generic shared
-             - libblas3 #Basic Linear Algebra Reference implementations, shared library
-             - libc6 #Automatically Tuned Linear Algebra Software, documentation
-             - libgfortran5 # Recommended by snapcraft
-             - liblapack-doc #Library of linear algebra routines 3 - documentation
-             - liblapack3 #Library of linear algebra routines 3 - shared version
-             - liblapacke #Library of linear algebra routines 3 - C lib shared version
-             - libquadmath0 # Recommended by snapcraft
-             - libtmglib3 #test matrix generators of LAPACK - shared version
-             - zlib1g
-#             - cpp-12 # see if I can get away without specifying this
-#             - g++-12 # see if I can get away without specifying this
-#             - gcc-12 # see if I can get away without specifying this
-#             - libstdc++6 # see if I can get away without specifying this
-        # override-pull: |
-        #               snapcraftctl pull
-        #               echo ${PWD}
-        #               cd ${SNAPCRAFT_PART_BUILD}/
-        #               cd ../
-        #               curl -O http://zlib.net/fossils/zlib-1.2.11.tar.gz
-        #                   # Unpack and compile zlib
-        #               tar -xzvf zlib-1.2.11.tar.gz
-        #               cd zlib-1.2.11
-        #               ./configure
-        #               make
-        override-build: |
-                     ## Compile
-                     mv ${SNAPCRAFT_PART_BUILD}/1.9/* ${SNAPCRAFT_PART_BUILD}/
-                     #ls ${SNAPCRAFT_PART_BUILD}/Makefile.*
-                     sed -i -e "s:../zlib-1.2.11/:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/zlib-1.2.12/:g" ${SNAPCRAFT_PART_BUILD}/*plink*
-                     snapcraftctl build
-      #filesets:
-        #       plink.out:
-        #                   - toy.map
-        #                   - toy.ped
-        #                   - plink
-        # stage:
-        #   - $plink.out
-        # prime:
-        #   - $plink.out
+        source: https://zzz.bwh.harvard.edu/plink/dist/plink-1.07-x86_64.zip
+        plugin: dump
         organize:
             "Icon_230417.svg" : snap/Icon_230417.svg
-            "bin/plink" : /usr/local/bin/plink
+            "plink-1.07-x86_64/plink" : bin/plink
+            # "plink-1.07-x86_64/test.ped" : $SNAP_USER_COMMON/test.ped
+            # "plink-1.07-x86_64/test.map" : $SNAP_USER_COMMON/test.map
+            # "plink-1.07-x86_64/COPYING.txt" : $SNAP_USER_COMMON/COPYING.txt
+            # "plink-1.07-x86_64/README.txt" : $SNAP_USER_COMMON/README.txt
